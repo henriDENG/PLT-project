@@ -1,0 +1,17 @@
+digraph Automate {
+Automate -> "pile: 2";
+Automate -> etats;
+etats -> "0";
+etats -> "1";
+etats -> "2";
+Automate -> initial;
+initial -> 0;
+Automate -> final;
+final -> 2;
+Automate -> transitions;
+transitions -> "(0→0,`a`,(→,`a`))";
+transitions -> "(0→1,`b`,(`a`,→),(→,`b`))";
+transitions -> "(1→1,`b`,(`a`,→),(→,`b`))";
+transitions -> "(1→2,`c`,(),(`b`,→))";
+transitions -> "(2→2,`c`,(),(`b`,→))";
+}

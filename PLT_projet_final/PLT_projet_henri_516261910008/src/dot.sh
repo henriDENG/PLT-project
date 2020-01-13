@@ -1,0 +1,1 @@
+dot -Tpng arbre_syntaxique.txt -o arbre_syntaxique.png

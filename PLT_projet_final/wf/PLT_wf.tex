@@ -1,0 +1,128 @@
+\documentclass[a4paper]{article}
+\usepackage{ctex}
+\usepackage{fancyhdr}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[center]{titlesec}
+\usepackage{indentfirst}
+\setlength{\parindent}{2em}
+\title{\textbf{Théorie des Langages de Programmation}}
+\author{Nom Chinois: Wang Fu\\Nom Francais: Francois \\No. 516261910014}
+\date{\today}
+\makeatletter
+\renewcommand{\section}{\@startsection{section}{1}{0mm}
+  {-\baselineskip}{0.5\baselineskip}{\large\bf\leftline}}
+\makeatother
+\makeatletter
+\renewcommand{\subsection}{\@startsection{subsection}{1}{0mm}
+  {-\baselineskip}{0.5\baselineskip}{\normalsize\bf\leftline}}
+\makeatother
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+\newpage
+\thispagestyle{empty}
+\tableofcontents
+\newpage
+\setcounter{page}{1}
+\section{Introduction}
+Tous les codes sont écrit dans C, et j'ai les exécuté sur Ubuntu 18.04, comme présenté dans la Figure 1. \par
+
+Dans les trois analyseurs, je présente une raison brutale si l'analyse ne peut pas réussir, la lange de cette raison est possible anglais. Mais tous les commentaires sont écrit en francais. Et vous pouvez choisir est-ce que vous voulez entrer dans la mode \textbf{debug}. Les fichers \textit{.c} sont les fichers avec \textit{main.c} pour tester, et les fichers \textit{.h} sont les fichers des functions. \par
+
+\section{Analyse Lexicale}
+\subsection{Idée}
+Dans cette partie, j'ai utilisé un automate pour réaliser l'analyseur lexicale. On peut considérer que chaque lettre dans l'entrée suit une transition à un autre état. Pour supprimer les commentaires(de format //... ou /*...*/), il est évident que par entrer le sign ``/" ou ``*", l'automate arrive aux états de commentaires s'il y a un ``/" avant. La sortie d'un des ces états est le fin de ligne, d'autre état est ``*/". Alos j'ai désigne un automate qui correspond à cette situation. \par
+Ensuite, pour examiner est-ce que le ficher d'automate est correct lexicalement, j'ai construit un autre automate. L'état de cet automate change aussi selon le lettre d'entrée. Pour vérifier les charactères chinois(Seulement ``零, 一, 二, 三, 四, 五, 六, 七, 八, 九, 十") et la flèche, je détecte le ASCII code de chaque lettre lit, si le code est inférieur à zéro, le logiciel lit ensuite deux lettres et justifier est-ce que ces trois lettres est la représentation d'un charactère chinois. Pour les mot réservé (``Automate", ``etats", ``initial", ``final", ``transitions"), on peut les considérer comme une liste d'états. Si le logiciel lit les premiers lettres de ces mots en dehors d'un pair de guilletmets, l'automate entre le premier état de cette liste. Alors c'est facile de faire l'analyse lexicale. Et après ces processus, un ficher \textit{tmp.txt}, c'est la lexème du ficher d'automate qui est utilisé dans l'analyse suivante. \par
+Vous pouvez compiler \textit{AnalyseurLexical.c} pour tester cette analyse. Et tous les functions sauf le \textit{main()} function sont écrit dans \textit{AnalyseurLexical.h}.\par
+
+\subsection{Functions}
+\begin{flushleft}
+$\bullet$ \textit{checkNum(int a)} \par 
+\end{flushleft}
+Cette function examiner est-ce qu'un lettre de ASCII code a est un chiffre. Si c'est un chiffre, elle rentre 1, sinon, elle rentre 0.\par
+\begin{flushleft}
+$\bullet$ \textit{checkAlphabet(int a)} \par 
+\end{flushleft}
+Cette function examiner est-ce qu'un lettre de ASCII code a est un lettre latin. Si c'est un lettre latin, elle rentre 1, sinon, elle rentre 0.\par
+\begin{flushleft}
+$\bullet$ \textit{checkSign(int a)} \par 
+\end{flushleft}
+Cette function examiner est-ce qu'un lettre de ASCII code a est un sign légal dans le lexème. Si c'est un sign légal, elle rentre 1, sinon, elle rentre 0.\par
+\begin{flushleft}
+$\bullet$ \textit{checkSpe(int a[])} \par 
+\end{flushleft}
+Cette function examiner est-ce qu'un caractère de UTF-8 code (a[0],a[1],a[2]) est un charactère chinois ou la flèche. Si c'est oui, elle rentre 1, sinon, elle rentre 0.\par
+\begin{flushleft}
+$\bullet$ \textit{AnalyzeLexical(char dir[])} \par 
+\end{flushleft}
+Cette function fait l'analyze lexicale d'automate de ficher de qui le nom est enregistrer dans \textit{dir[]}. Elle rentre 0 si l'analyze réussi et 0 s'il y a une erreur lexicale. Et elle donne une raison brutale de cette erreur. \par
+
+\section{Analyse Syntaxique}
+\subsection{Idée}
+Dans cette partie, j'ai utilisé un automate pour faire l'analyze syntaxique. L'analyseur prend \textit{tmp.txt} généré par l'analyseur lexical comme l'entrée. Comme la format du ficher d'automate est défini strictement, le logiciel peut changer l'état en considérant le lettre d'entrée. Je vérifie les problèmes des parenthèses, des crochets et des accolades dans cette partie. Vous devez d'abord donner les noms d'états. Vous pouvez donner l'état initial, l'état final et les transitions dans un ordre quelconque. Et vous pouvez omettre les parties des piles dans la description d'une transition s'il n'y a pas de manipulation. Pour les autres grammaires, vous devez respecter strictement la format des fichers donnés comme \textit{Dpile.txt}. \par
+Cet analyseur construit deux autres fichers temporel. Le premier est \textit{info.txt} qui contient l'arbre syntaxique de cet automate. L'autre est \textit{tmp1.txt} qui peut faciliter l'entrée d'analyseur sementique. \par
+Vous pouvez compiler \textit{AnalyseurSyntaxique.c} pour tester cette analyse. Et tous les functions sauf le \textit{main()} function sont écrit dans \textit{AnalyseurSyntaxique.h}.\par
+\subsection{BNF}
+La grammaire BNF de mon automate est définie comme: \par
+\begin{flushleft}
+$\bullet$ \textless lettre\textgreater ::=``a" $|$ ``b" $|$ ... $|$ ``z" $|$ ``A" $|$ ``B" $|$ ... $|$ ``Z" \par 
+
+$\bullet$ \textless chiffrenn\textgreater ::=``1" $|$ ``2" $|$ ``3" $|$ ... $|$ ``9" \par
+
+$\bullet$ \textless chiffre\textgreater ::=``0" $|$ \textless chiffrenn\textgreater \par
+
+$\bullet$ \textless chinois\textgreater ::=``零" $|$ ``一" $|$ ``二" $|$ ``三" $|$ ``四" $|$ ``五" $|$ ``六" $|$ ``七" $|$ ``八" $|$ ``九" $|$ ``十"
+
+$\bullet$ \textless special\textgreater ::=\textless chinois\textgreater $|$ ``→" \par
+
+$\bullet$ \textless naturel\textgreater ::=\textless chiffre\textgreater $|$\textless chiffrenn\textgreater $\lbrace$\textless chiffre\textgreater $\rbrace$\par
+
+$\bullet$ \textless naturels\textgreater ::=\textless naturel\textgreater $|$\textless naturels\textgreater ``,"\textless naturel\textgreater \par
+
+$\bullet$ \textless guillemet\textgreater ::=`` ` " $|$ `` " " \par
+
+$\bullet$ \textless numpile\textgreater ::=``Automate=("``0"$|$``1"$|$``2"``)" \par
+
+$\bullet$ \textless initial\textgreater ::=``initial="\textless naturel\textgreater \par
+
+$\bullet$ \textless chartrans\textgreater ::=\textless guillemet\textgreater (\textless chiffre\textgreater $|$\textless lettre\textgreater)\textless guillemet\textgreater \par
+
+$\bullet$ \textless translettre\textgreater ::=\par \textless naturel\textgreater ``→"\textless naturel\textgreater ``,"\textless guillemet\textgreater \textless chartrans\textgreater \textless guillemet\textgreater \par
+
+$\bullet$ \textless pilein\textgreater ::=`` (→, " \textless chartrans\textgreater   ``)''\par
+
+$\bullet$ \textless pileout\textgreater ::=``("\textless chartrans\textgreater  ``,→)" \par  
+
+$\bullet$ \textless manipulation\textgreater ::=``,"(\textless pilein\textgreater  $|$ \textless pileout\textgreater  $|$``()") \par
+
+$\bullet$ \textless transition\textgreater ::=``("(\textless translettre\textgreater $|$ \textless translettre\textgreater \textless manipulation\textgreater $|$\par \textless translettre\textgreater \textless manipulation\textgreater \textless manipulation\textgreater)``)" \par
+
+$\bullet$ \textless transitions\textgreater ::=\textless transition\textgreater $|$\textless transitions\textgreater ``,"\textless transition\textgreater \par
+
+$\bullet$ \textless mot\textgreater ::=\textless lettre\textgreater $|$\textless lettre\textgreater \textless mot\textgreater \par
+
+$\bullet$ \textless etat\textgreater ::=\textless guillemet\textgreater (\textless mot\textgreater $|$\textless naturel\textgreater $|$ \textless chinois\textgreater)\textless guillemet\textgreater \par
+
+$\bullet$ \textless etats\textgreater ::=\textless etat\textgreater $|$ \textless etats\textgreater``,"\textless etat\textgreater
+
+$\bullet$ \textless expression\textgreater ::=((``etats"$|$``final"$|$``transitions")`` =[ "(\textless naturels\textgreater $|$ \textless etats\textgreater $|$\textless transitions\textgreater )) $|$ " initial= "\textless naturel\textgreater \par
+
+$\bullet$ \textless expressions\textgreater ::=\textless expression\textgreater $|$\textless expressions\textgreater \textless expression\textgreater \par
+
+$\bullet$ \textless automate\textgreater ::=\textless numpile\textgreater ``$\lbrace$"\textless expressions\textgreater  ``$\rbrace$" \par
+\end{flushleft}
+\subsection{Arbre Syntaxique}
+
+\subsection{Functions}
+
+\section{Analyse Sementique}
+
+
+
+\section{Execution}
+
+
+\end{document}
