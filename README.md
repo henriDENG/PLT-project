@@ -1,6 +1,6 @@
 # PLT-projet
 
-Use C as the programmming language.
+Use C as the Programmming Language.
 
 On veut écrire un compilateur d’automate qui:
 
